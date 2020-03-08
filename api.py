@@ -12,13 +12,13 @@ print(dir_data)
 
 bookjson,authorjson = helper.jsonParse(dir_data)
 
-
+# index page
 @app.route('/')
 def index():
     return "hello user"
 
 
-
+# search books
 @app.route("/books/<string:attr>=<string:attr_value>", methods= ['GET'])
 def findbooks(attr, attr_value):
    
@@ -34,6 +34,7 @@ def findbooks(attr, attr_value):
     else:
         return jsonify({"_HTTP_":200, "results": res})
 
+#search authors
 @app.route("/authors/<string:attr>=<string:attr_val>",methods = ['GET'])
 def findauthros(attr,attr_val):
     res = []
@@ -48,17 +49,19 @@ def findauthros(attr,attr_val):
     else:
         return jsonify({"_HTTP_":200, "results": res})
 
-@app.route("/titles/<string:attr>and<string:attr_val>", methods =['GET'])
+#search books with and
+@app.route("/titles/<string:attr>/and/<string:attr_val>", methods =['GET'])
 def findAndTitle(attr, attr_val):
     res=[]
     for i in bookjson:
-        if str(attr) in str(i['title']) and str(attr_val) in str(i['title']):
+        if (str(attr) in str(i['title'])) and (str(attr_val) in str(i['title'])):
             res.append(i)
     if not res:
         return abort(400)
     else:
         return jsonify({"_HTTP_": 200, "results": res})
 
+#search authors with or
 @app.route("/authorname/<string:attr>/or/<string:attr_val>", methods=['GET'])
 def findOrAuthor(attr,attr_val):
     res=[]
@@ -72,6 +75,7 @@ def findOrAuthor(attr,attr_val):
     else:
         return jsonify({"_HTTP_": 200, "results": res})
 
+# change books
 @app.route("/books/puts<string:title>", methods=['PUT'])
 def putBook(title):
     if (request.json is None):
@@ -86,6 +90,7 @@ def putBook(title):
             abort(400)
 
 
+# change authors
 @app.route("/author?put<string:name>", methods=['PUT'])
 def putAuthor(name):
     if (request.json is None):
@@ -99,6 +104,8 @@ def putAuthor(name):
         else:
             abort(400)
 
+
+#post one book, multiple books one auhor multiple authors
 @app.route("/book", methods = ['POST'])
 def postOneBook():
     if (request.json is None) or (request.json['title'] is None):
